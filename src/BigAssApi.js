@@ -48,21 +48,21 @@ function FanMaster (numberOfExpectedDevices) {
         this.connectionOpen = false;
     });
 
+    let addDevice = (newDevice) => {
+        this.allDevices[newDevice.name] = newDevice;
+        this.onDeviceConnection(newDevice);
+        newDevice.updateAll(() => this.onDeviceFullyUpdated(newDevice));
+    };
+
     let handleNewDevice = (msg, address) => {
         if (msg[0] == "ALL") {
             return; // Message not addressed to us
         }
         const deviceType = msg[4].split(",",1); // Grab first part of string before ","
         if (deviceType == "FAN") {
-            const newDevice = new BigAssFan(msg[0], msg[3], address, this);
-            this.allDevices[msg[0]] = newDevice;
-            this.onDeviceConnection(newDevice);
-            newDevice.updateAll(() => this.onDeviceFullyUpdated(newDevice));
+            addDevice(new BigAssFan(msg[0], msg[3], address, this));
         } else if (deviceType == "LIGHT") {
-            let newLight = new BigAssLight(msg[0], msg[3], address, this);
-            this.allDevices[msg[0]] = newLight;
-            this.onDeviceConnection(newLight);
-            newLight.updateAll(() => this.onDeviceFullyUpdated(newLight));
+            addDevice(new BigAssLight(msg[0], msg[3], address, this));
         } else if (deviceType == "SWITCH") {
             myLogWrapper("Skipping wall control - TODO : Add support for wall control");
         } else {

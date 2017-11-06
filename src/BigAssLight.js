@@ -86,8 +86,8 @@ module.exports = function BigAssLight (name, id, address, master) {
         }
     }
 
-    this.master.dispatchForFans[name] = this.handleMessage;
-    this.master.dispatchForFans[id] = this.handleMessage;
+    this.master.dispatchForDevices[name] = this.handleMessage;
+    this.master.dispatchForDevices[id] = this.handleMessage;
 
     this.updateAll = callback => {
         const syncCallback = syncingCallback(this.propertyTable, callback);

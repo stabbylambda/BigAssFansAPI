@@ -4,21 +4,21 @@ const BigAssLight = require('./BigAssLight');
 const BigAssProperty = require('./BigAssProperty');
 const { syncingCallback, retryCall, myLogWrapper } = require('./utils');
 
-function FanMaster (numberOfExpectedFans) {
-    this.allDevices = {}; // Dictionary of fan name -> BigAssFan
-    this.connectionOpen = false;
+function FanMaster (numberOfExpectedDevices) {
+    this.allDevices = {}; // Dictionary of fan name -> BigAssDevice
+    this.sonnectionOpen = false;
     this.fanPort = 31415;
     this.everyone = "255.255.255.255";
     this.server = dgram.createSocket("udp4");
-    this.pollingIntervalForFans = 1000;
-    this.dispatchForFans = {};
-    this.numberOfExpectedFans = numberOfExpectedFans ? numberOfExpectedFans : 1;
-    this.theAllFan = new BigAssFan("ALL", "ALL", this.everyone, this); // If you wanted to broadcast to everyone
+    this.pollingIntervalForDevices = 1000;
+    this.dispatchForDevices = {};
+    this.numberOfExpectedDevices = numberOfExpectedDevices ? numberOfExpectedDevices : 1;
+    this.theAllDevice = new BigAssFan("ALL", "ALL", this.everyone, this); // If you wanted to broadcast to everyone
 
-    this.onFanConnection = () => {}; // Callback you can register for
-    this.onFanFullyUpdated = () => {}; // Callback you can register for
+    this.onDeviceConnection = () => {}; // Callback you can register for
+    this.onDeviceFullyUpdated = () => {}; // Callback you can register for
 
-    this.broadcastToFans = (message) => {
+    this.broadcastToDevices = (message) => {
         this.sendRaw(`<ALL;${message}>`, this.everyone);
     };
 
@@ -28,46 +28,46 @@ function FanMaster (numberOfExpectedFans) {
         this.server.send(buffMessage, 0, buffMessage.length, this.fanPort, address);
     };
 
-    this.rescanForFans = () => {
-        this.broadcastToFans("DEVICE;ID;GET");
+    this.rescanForDevices = () => {
+        this.broadcastToDevices("DEVICE;ID;GET");
     };
 
-    this.rescanUntilAllFans = () => {
-        const pollForFans = () => {
-            if (Object.keys(this.allDevices).length < this.numberOfExpectedFans) {
-                this.rescanForFans();
+    this.rescanUntilAllDevices = () => {
+        const pollForDevices = () => {
+            if (Object.keys(this.allDevices).length < this.numberOfExpectedDevices) {
+                this.rescanForDevices();
             } else {
                 clearInterval(id);
             }
         };
-        const id = setInterval(pollForFans, this.pollingIntervalForFans);
-        pollForFans();
+        const id = setInterval(pollForDevices, this.pollingIntervalForDevices);
+        pollForDevices();
     };
 
     this.server.on('close', (msg, rinfo) => {
         this.connectionOpen = false;
     });
 
-    let handleNewFan = (msg, address) => {
+    let handleNewDevice = (msg, address) => {
         if (msg[0] == "ALL") {
             return; // Message not addressed to us
         }
         const deviceType = msg[4].split(",",1); // Grab first part of string before ","
         if (deviceType == "FAN") {
-            const newFan = new BigAssFan(msg[0], msg[3], address, this);
-            this.allDevices[msg[0]] = newFan;
-            this.onFanConnection(newFan);
-            newFan.updateAll(() => this.onFanFullyUpdated(newFan));
+            const newDevice = new BigAssFan(msg[0], msg[3], address, this);
+            this.allDevices[msg[0]] = newDevice;
+            this.onDeviceConnection(newDevice);
+            newDevice.updateAll(() => this.onDeviceFullyUpdated(newDevice));
         } else if (deviceType == "LIGHT") {
             let newLight = new BigAssLight(msg[0], msg[3], address, this);
             this.allDevices[msg[0]] = newLight;
-            this.onFanConnection(newLight);
-            newLight.updateAll(() => this.onFanFullyUpdated(newLight));
+            this.onDeviceConnection(newLight);
+            newLight.updateAll(() => this.onDeviceFullyUpdated(newLight));
         } else if (deviceType == "SWITCH") {
             myLogWrapper("Skipping wall control - TODO : Add support for wall control");
         } else {
             myLogWrapper("Received message from unknown fan - rescanning");
-            this.rescanForFans();
+            this.rescanForDevices();
         }
     };
 
@@ -75,18 +75,18 @@ function FanMaster (numberOfExpectedFans) {
         myLogWrapper(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
         const splitMessage = (`${msg}`).replace(/<|>|\(|\)/g, "").split(";");
         const fanId = splitMessage.shift();
-        if (this.dispatchForFans[fanId]) {
-            this.dispatchForFans[fanId](splitMessage);
+        if (this.dispatchForDevices[fanId]) {
+            this.dispatchForDevices[fanId](splitMessage);
         } else {
             splitMessage.unshift(fanId);
-            handleNewFan(splitMessage, rinfo.address);
+            handleNewDevice(splitMessage, rinfo.address);
         }
     });
 
     this.server.bind(this.fanPort, () => {
         this.server.setBroadcast(true);
         this.connectionOpen = true;
-        this.rescanUntilAllFans();
+        this.rescanUntilAllDevices();
     });
 }
 

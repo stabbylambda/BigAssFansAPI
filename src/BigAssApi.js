@@ -5,7 +5,7 @@ const BigAssProperty = require('./BigAssProperty');
 const { syncingCallback, retryCall, myLogWrapper } = require('./utils');
 
 function FanMaster (numberOfExpectedFans) {
-    this.allFans = {}; // Dictionary of fan name -> BigAssFan
+    this.allDevices = {}; // Dictionary of fan name -> BigAssFan
     this.connectionOpen = false;
     this.fanPort = 31415;
     this.everyone = "255.255.255.255";
@@ -34,7 +34,7 @@ function FanMaster (numberOfExpectedFans) {
 
     this.rescanUntilAllFans = () => {
         const pollForFans = () => {
-            if (Object.keys(this.allFans).length < this.numberOfExpectedFans) {
+            if (Object.keys(this.allDevices).length < this.numberOfExpectedFans) {
                 this.rescanForFans();
             } else {
                 clearInterval(id);
@@ -55,12 +55,12 @@ function FanMaster (numberOfExpectedFans) {
         const deviceType = msg[4].split(",",1); // Grab first part of string before ","
         if (deviceType == "FAN") {
             const newFan = new BigAssFan(msg[0], msg[3], address, this);
-            this.allFans[msg[0]] = newFan;
+            this.allDevices[msg[0]] = newFan;
             this.onFanConnection(newFan);
             newFan.updateAll(() => this.onFanFullyUpdated(newFan));
         } else if (deviceType == "LIGHT") {
             let newLight = new BigAssLight(msg[0], msg[3], address, this);
-            this.allFans[msg[0]] = newLight;
+            this.allDevices[msg[0]] = newLight;
             this.onFanConnection(newLight);
             newLight.updateAll(() => this.onFanFullyUpdated(newLight));
         } else if (deviceType == "SWITCH") {

@@ -7,6 +7,9 @@
     "type": "git",
     "url": "https://github.com/sean9keenan/BigAssFansAPI.git"
   },
+  "scripts": {
+    "discover": "BIG_ASS_LOG=true node ./Examples/getFanInfo.js"
+  },
   "keywords": [
     "homeautomation"
   ],

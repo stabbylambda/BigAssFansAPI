@@ -1,4 +1,4 @@
-var bigAssApi = require("../BigAssApi");
+var bigAssApi = require("../");
 
 // Don't scan for any fans since we know the exact address of the fan (faster!)
 var myMaster = new bigAssApi.FanMaster(0); 

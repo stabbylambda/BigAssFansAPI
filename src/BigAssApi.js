@@ -56,6 +56,8 @@ function FanMaster (numberOfExpectedFans) {
             newFan.updateAll(function() {
                 this.onFanFullyUpdated(newFan)
             }.bind(this));
+        } else if (deviceType == "LIGHT") {
+
         } else if (deviceType == "SWITCH") {
             myLogWrapper("Skipping wall control - TODO : Add support for wall control")
         } else {
@@ -405,5 +407,5 @@ var myLogWrapper = function(msg) {
 
 exports.FanMaster = FanMaster;
 exports.BigAssFan = BigAssFan;
-exports.logging = false;
+exports.logging = true;
 

@@ -6,14 +6,14 @@
  * called these N times it will call the passed in callback
  */
 function syncingCallback (tableBeingUpdated, callback) {
-    var callCount = 0;
-    var lengthOfTable = Object.keys(tableBeingUpdated).length;
+    let callCount = 0;
+    const lengthOfTable = Object.keys(tableBeingUpdated).length;
 
-    var callbackForUser = function() {
+    const callbackForUser = function() {
         if (++callCount == lengthOfTable) {
             callback();
         }
-    }
+    };
 
     return callback ? callbackForUser : undefined;
 }
@@ -27,31 +27,31 @@ function syncingCallback (tableBeingUpdated, callback) {
  * @param isSuccess       - Function to call to check if retry was successful (Returns true/false)
  * @param isFailure       - Function to call if all retries were a failure
  */
-var retryCall = function(maxRetries, waitTimeOnRetry, toCall, isSuccess, isFailure) {
-    var tried = 0;
-    var retry = function() {
+const retryCall = function(maxRetries, waitTimeOnRetry, toCall, isSuccess, isFailure) {
+    let tried = 0;
+    const retry = function() {
         if (!isSuccess()) {
             if (++tried >= maxRetries) {
                 myLogWrapper("Failed - no more retries left");
                 clearInterval(id);
                 isFailure();
             } else {
-                myLogWrapper("Failed - retrying : " + tried);
+                myLogWrapper(`Failed - retrying : ${tried}`);
                 toCall();
             }
         } else {
             clearInterval(id);
         }
     }.bind(this.bigAssFan);
-    var id = setInterval(retry, waitTimeOnRetry);
+    const id = setInterval(retry, waitTimeOnRetry);
     toCall();
-}
+};
 
 /**
  * Simple logging wrapper so that logging can be turned on/off
  */
 var myLogWrapper = function(msg) {
-    var logging = process.env['BIG_ASS_LOG'] === "true";
+    const logging = process.env['BIG_ASS_LOG'] === "true";
     if (logging) {
         console.log(msg);
     }

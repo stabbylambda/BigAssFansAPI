@@ -1,7 +1,7 @@
-var BigAssProperty = require('./BigAssProperty');
-var { syncingCallback, retryCall, myLogWrapper } = require('./utils');
+const BigAssProperty = require('./BigAssProperty');
+const { syncingCallback, retryCall, myLogWrapper } = require('./utils');
 
-function BigAssFan (name, id, address, master) {
+module.exports = function BigAssFan (name, id, address, master) {
     this.name = name;
     this.id = id ? id : name; // Use the name as the backup if no ID is available
     this.address = address;
@@ -67,13 +67,13 @@ function BigAssFan (name, id, address, master) {
     // Property listners are an array of two values
     //   - (1) : Array of property names to match on response
     //   - (2) : Callback to run
-    this.handleMessage = function(message) {
-        for (var key in this.propertyListeners) {
-            var propertyListener = this.propertyListeners[key]
+    this.handleMessage = message => {
+        for (const key in this.propertyListeners) {
+            const propertyListener = this.propertyListeners[key];
             if (!message || message.length < propertyListener[0].length) {
                 continue;
             }
-            var isSubset = true;
+            let isSubset = true;
             for (var i = 0; i < propertyListener[0].length; i++) {
                 if (propertyListener[0][i] != message[i]) {
                     isSubset = false;
@@ -84,26 +84,24 @@ function BigAssFan (name, id, address, master) {
                 propertyListener[1](message[i]);
             }
         }
-    }.bind(this)
+    }
 
     this.master.dispatchForFans[name] = this.handleMessage;
     this.master.dispatchForFans[id] = this.handleMessage;
 
-    this.updateAll = function(callback) {
-        var syncCallback = syncingCallback(this.propertyTable, callback);
-        for (var propertyKey in this.propertyTable) {
+    this.updateAll = callback => {
+        const syncCallback = syncingCallback(this.propertyTable, callback);
+        for (const propertyKey in this.propertyTable) {
             this.propertyTable[propertyKey].updateAll(syncCallback);
         }
-    }.bind(this)
+    }
 
-    this.update = function(property, callback) {
+    this.update = (property, callback) => {
         this[property].updateAll(callback)
-    }.bind(this)
+    }
 
-    this.send = function(msg) {
-        var toSend = [this.id].concat(msg).join(";");
-        this.master.sendRaw("<" + toSend + ">", address);
-    }.bind(this)
-}
-
-module.exports = BigAssFan;
+    this.send = msg => {
+        const toSend = [this.id].concat(msg).join(";");
+        this.master.sendRaw(`<${toSend}>`, address);
+    }
+};

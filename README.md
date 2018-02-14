@@ -37,7 +37,7 @@ Every fan needs a `FanMaster`! Because that's where the messages come from!
 
 BigAssFan
 ---------
- - Allows sending and recieving messages from the fan
+ - Allows sending and receiving messages from the fan
  - Registering for property updates
  - Sending update events to a given property
  - Implementing retries on setting properties

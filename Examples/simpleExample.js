@@ -1,8 +1,8 @@
-var bigAssApi = require("../");
+var bigAssApi = require("../src/BigAssApi");
 
 var myMaster = new bigAssApi.FanMaster(1); // Expect only one fan in my setup
 
-myMaster.onFanFullyUpdated = function(myBigAss){
+myMaster.onDeviceFullyUpdated = function(myBigAss){
 
     // Will automatically update / retry setting for this connected fan
     myBigAss.light.brightness = 1;

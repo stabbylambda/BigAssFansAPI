@@ -6,7 +6,7 @@ const { syncingCallback, retryCall, myLogWrapper } = require('./utils');
 
 function FanMaster (numberOfExpectedDevices) {
     this.allDevices = {}; // Dictionary of fan name -> BigAssDevice
-    this.sonnectionOpen = false;
+    this.connectionOpen = false;
     this.fanPort = 31415;
     this.everyone = "255.255.255.255";
     this.server = dgram.createSocket("udp4");

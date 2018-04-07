@@ -1,8 +1,6 @@
 Unofficial Big Ass API
 ======================
-This is this an unofficial Node.js API for [Big Ass Fans - fans with SenseME](www.bigassfans.com).
-
-In particular - all development was done on a Haiku fan with SenseME.
+This is this an unofficial Node.js API for [Big Ass Fans and lights with SenseME](www.bigassfans.com).
 
 What this could be/is used for
 ------------------------------
@@ -12,28 +10,28 @@ What this could be/is used for
 
 Using the API!
 ==============
-Two major components - the FanMaster and the BigAssFan.
+Three major components - the FanMaster, the BigAssLight, and the BigAssFan.
 
 FanMaster
 ---------
- - Listens for new fans
- - Allows sending messages to all fans
- - Routes all incoming messages to the appropriate child fans
- - Retries fan searching if fans detected < fans specified in constructor
- - Will not search for any fans if 0 is passed into constructor
+ - Listens for new devices
+ - Allows sending messages to all devices
+ - Routes all incoming messages to the appropriate child devices
+ - Retries device searching if devices detected < devices specified in constructor
+ - Will not search for any devices if 0 is passed into constructor
 
 Every fan needs a `FanMaster`! Because that's where the messages come from!
 
 ### Usage
- - Initialize with: `new bigAssApi.FanMaster(numberOfExpectedFans)`
+ - Initialize with: `new bigAssApi.FanMaster(numberOfExpectedDevices)`
  	- Will continue to query for new fans until numberOfExpectedFans is met - default is 1
- - `onFanFullyUpdated` - callback you can override - called with every new fully initialized fan
- - `onFanConnection` - callback you can override - called with every new fan connection with the fan connected
- 	- Will get called before onFanFullyUpdated - but not guaranteed to have all fields updated (some will be `undefined`)
- - `rescanForFans` - rescans for all fans
- - `rescanUntilAllFans` - continues rescanning until `fanMaster.numberOfExpectedFans >= fansFound`
- - `allFans` - dictionary containing all of the fans - keyed off of the user given name
- - `pollingIntervalForFans` - polling interval if `numberOfExpectedFans < fansFound`
+ - `onDeviceFullyUpdated` - callback you can override - called with every new fully initialized device
+ - `onDeviceConnection` - callback you can override - called with every new device connection with the device connected
+ 	- Will get called before `onDeviceFullyUpdated` - but not guaranteed to have all fields updated (some will be `undefined`)
+ - `rescanForDevices` - rescans for all fans
+ - `rescanUntilAllDevices` - continues rescanning until `fanMaster.numberOfExpectedDevices >= fansFound`
+ - `allDevices` - dictionary containing all of the devices - keyed off of the user given name
+ - `pollingIntervalForDevices` - polling interval if `numberOfExpectedDevices < devicesFound`
 
 BigAssFan
 ---------
@@ -56,7 +54,7 @@ var bigAssApi = require("BigAssFansAPI");
 
 var myMaster = new bigAssApi.FanMaster(1); // Expect only one fan in my setup
 
-myMaster.onFanFullyUpdated = function(myBigAss){
+myMaster.onDeviceFullyUpdated = function(myBigAss){
 
     // Will automatically update / retry setting for this connected fan
     myBigAss.light.brightness = 1;

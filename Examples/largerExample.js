@@ -1,10 +1,10 @@
-var bigAssApi = require("../BigAssApi");
+var bigAssApi = require("../src/BigAssApi");
 bigAssApi.logging = false;
 
 var myMaster = new bigAssApi.FanMaster(1); // Expect only one fan in my setup
 
 console.log("Waiting for full update");
-myMaster.onFanFullyUpdated = function(myBigAss){
+myMaster.onDeviceFullyUpdated = function(myBigAss){
 
     // Filter out all fants that don't begin with "Sean" - that's in my fan's name!
 	var lowercaseName = myBigAss.name.toLowerCase();
